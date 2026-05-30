@@ -3,23 +3,65 @@
     "name": "PokemonCardCollection",
     "slug": "PokemonCardCollection",
     "version": "1.0.0",
+    "owner": "redonalla",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0D0D1A"
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pokemoncardcollection.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "PokemonCardCollection needs camera access to scan Pokemon cards."
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0D0D1A",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "permissions": [
+        "CAMERA",
+        "android.permission.CAMERA"
+      ],
+      "package": "com.pokemoncardcollection.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "PokemonCardCollection needs camera access to scan Pokemon cards.",
+          "enableFrameProcessors": true,
+          "enableCodeScanner": false
+        }
+      ],
+      "expo-sqlite",
+      "expo-image",
+      [
+        "expo-status-bar",
+        {
+          "hidden": false,
+          "style": "light"
+        }
+      ]
+    ],
+    "extra": {
+      "expo-status-bar": {
+        "style": "light",
+        "hidden": false
+      },
+      "eas": {
+        "projectId": "f5ce7cc6-db81-4c98-b726-89761712f157"
+      }
     }
   }
 }
