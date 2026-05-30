@@ -8,7 +8,6 @@ import {
   RoundedRect,
   Path,
   Shadow,
-  LinearGradient,
   Text as SkiaText,
 } from '@shopify/react-native-skia';
 
@@ -19,6 +18,7 @@ import { ManageChildrenScreen } from '../screens/ManageChildrenScreen';
 import { AddChildScreen } from '../screens/AddChildScreen';
 import { DataManagementScreen } from '../screens/DataManagementScreen';
 import { useColors, RADII } from '../theme/skiaTheme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // --------------- Type definitions ---------------
 
@@ -126,11 +126,13 @@ function SearchStackNavigator() {
 
 function MainTabNavigator() {
   const COLORS = useColors();
+  const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
 
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
+      screenOptions={({
+        route}) => ({
         headerShown: false,
         tabBarIcon: ({ focused }) => <TabIcon name={route.name} focused={focused} />,
         tabBarActiveTintColor: COLORS.gold,
@@ -141,13 +143,17 @@ function MainTabNavigator() {
             </Canvas>
         ),
         tabBarStyle: {
-          height: 64,
+          height: 63,
           paddingBottom: 8,
+          marginBottom: insets.bottom,
           paddingTop: 6,
           borderTopWidth: 0,
           elevation: 0,
           shadowColor: 'transparent',
           backgroundColor: 'transparent',
+        },
+        contentStyle: {
+          backgroundColor: COLORS.surface
         },
         tabBarLabelStyle: {
           fontSize: 11,
