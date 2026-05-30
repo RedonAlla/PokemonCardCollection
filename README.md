@@ -54,7 +54,8 @@ The **Collectors** tab has a stack navigator for drill-down: Collection detail a
 | UI | React Native 0.85, React Navigation 7 |
 | Graphics | [React Native Skia 2.6](https://shopify.github.io/react-native-skia/) |
 | Animations | React Native Reanimated 4, Gesture Handler 2 |
-| State | [Zustand 5](https://zustand.docs.pmnd.rs/) |
+| State | [Zustand 5](https://zustand.docs.pmnd.rs/) (including theme store) |
+| Theming | `useColors()` hook + dark/light palettes + in-app toggle |
 | Database | [expo-sqlite](https://docs.expo.dev/versions/v56.0.0/sdk/sqlite/) (SQLite) |
 | File I/O | expo-file-system (v56 File API + legacy read/write) |
 | Sharing | expo-sharing |
@@ -72,6 +73,7 @@ src/
 │   ├── cards/           # CardGridItem, CollectionGrid, HoloCardViewer, CardSearchBar
 │   ├── children/        # ChildAvatar, ChildProfileCard, ChildSelector
 │   ├── common/          # Button, ConfirmDialog, EmptyState, ErrorBoundary, LoadingOverlay
+│   │   └── card/        # PokemonCard, CardImageCanvas, CardGestureContainer
 │   ├── search/          # SearchResultsGrid, CardAssignSheet
 │   └── skia/            # Skia-themed UI primitives (Button, Card, Avatar, BottomSheet, etc.)
 ├── core/                # App entry, Navigation (3-tab + stacks), Providers, Skia fonts
@@ -79,8 +81,8 @@ src/
 ├── hooks/               # useCards, useDebounce, useCardLookup, useImagePreloader
 ├── screens/             # Home, Collection, Search, AddChild, ManageChildren, DataManagement
 ├── services/            # tcgdexApi (search, OCR matching), ocrParser, setMatcher
-├── store/               # Zustand stores (useAppStore, useChildrenStore, useCollectionStore)
-├── theme/               # Color tokens, spacing, font sizes, shadows, animation presets
+├── store/               # Zustand stores (useAppStore, useChildrenStore, useCollectionStore, useThemeStore)
+├── theme/               # Color palettes (dark/light), useColors hook, spacing, radii, shadows
 ├── types/               # TypeScript types for API responses, DB rows, cards, children
 └── utils/               # Colors, formatting, validation, constants
 ```
@@ -191,15 +193,19 @@ npx expo run:android
 
 | Profile | Platform | Output |
 |---------|----------|--------|
-| `preview` | Android | APK (direct install) |
+| `preview` | Android | APK (debug, direct install) |
 | `preview` | iOS | IPA (ad-hoc) |
-| `release` | Android | AAB (Play Store) |
+| `release` | Android | APK (release, direct install) |
 | `release` | iOS | IPA (App Store) |
 
 ### Build APK (Android)
 
 ```bash
+# Debug APK
 npx eas build --platform android --profile preview
+
+# Release APK
+npx eas build --platform android --profile release
 ```
 
 ### Build for iOS
