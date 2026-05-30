@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
 import type { CardWithDateAdded } from '../../types/database';
 import { GRID_COLUMNS, GRID_SPACING } from '../../utils/constants';
-import { COLORS, RADII } from '../../theme/skiaTheme';
+import { useColors, RADII } from '../../theme/skiaTheme';
 
 interface CardGridItemProps {
   card: CardWithDateAdded;
@@ -14,9 +14,15 @@ interface CardGridItemProps {
 
 export function CardGridItem({ card, onPress, onLongPress }: CardGridItemProps) {
   const { width: screenWidth } = useWindowDimensions();
+  const COLORS = useColors();
   const padding = GRID_SPACING * 2;
   const cardWidth = (screenWidth - padding - GRID_SPACING * (GRID_COLUMNS - 1)) / GRID_COLUMNS;
   const cardHeight = cardWidth * 1.4;
+
+  const styles = useMemo(() => StyleSheet.create({
+    container: { borderRadius: RADII.sm, overflow: 'hidden', backgroundColor: COLORS.surface },
+    image: { borderRadius: RADII.sm },
+  }), [COLORS]);
 
   return (
     <TouchableOpacity
@@ -37,8 +43,3 @@ export function CardGridItem({ card, onPress, onLongPress }: CardGridItemProps) 
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { borderRadius: RADII.sm, overflow: 'hidden', backgroundColor: COLORS.surface },
-  image: { borderRadius: RADII.sm },
-});

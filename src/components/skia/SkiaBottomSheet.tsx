@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   Modal,
   View,
@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Canvas, RoundedRect, Shadow, Text as SkiaText, BackdropFilter, Blur } from '@shopify/react-native-skia';
-import { COLORS, RADII } from '../../theme/skiaTheme';
+import { useColors, RADII } from '../../theme/skiaTheme';
 import { useSkiaFonts } from './SkiaText';
 
 interface SkiaBottomSheetProps {
@@ -33,11 +33,30 @@ export function SkiaBottomSheet({
   const insets = useSafeAreaInsets();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const { bold } = useSkiaFonts();
+  const COLORS = useColors();
 
   const sheetHeight = screenHeight * maxHeightFraction;
   const handleWidth = 36;
   const handleHeight = 5;
   const handleY = 12;
+
+  const styles = useMemo(() => StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: COLORS.overlay,
+      justifyContent: 'flex-end',
+    },
+    sheetContainer: {
+      width: '100%',
+      borderTopLeftRadius: RADII.xl,
+      borderTopRightRadius: RADII.xl,
+      overflow: 'visible',
+    },
+    content: {
+      flex: 1,
+      paddingHorizontal: 20,
+    },
+  }), [COLORS]);
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -98,21 +117,3 @@ export function SkiaBottomSheet({
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: COLORS.overlay,
-    justifyContent: 'flex-end',
-  },
-  sheetContainer: {
-    width: '100%',
-    borderTopLeftRadius: RADII.xl,
-    borderTopRightRadius: RADII.xl,
-    overflow: 'visible',
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-});

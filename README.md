@@ -14,18 +14,21 @@ A React Native (Expo) app for tracking Pokémon card collections across multiple
 
 - **Card Search & Assignment** — Search the full TCGdex database by card name. Tap any result to assign it to one or more collectors via a bottom sheet. Each child's row shows independent ownership — adding a card to Child B never affects Child A.
 
-- **3D Holographic Card Viewer** — Tap a card in a collection to open a fullscreen viewer with real-time 3D tilt driven by finger pan gestures, spring-back physics, and idle auto-rotate. Five Skia shader layers (base, rainbow shine, radial glare, grain texture, glitter) with blend modes (Color Dodge, Overlay) create the holographic effect.
+- **3D Holographic Card Viewer** — Tap a card in a collection to open a fullscreen viewer with real-time 3D tilt driven by finger pan gestures, spring-back physics, and idle auto-rotate. Five Skia shader layers (base, rainbow shine, radial glare, grain texture, glitter) with blend modes (Color Dodge, Overlay) create the holographic effect. The overlay and close button adapt to the current theme.
 
-- **Data Management** — A dedicated tab with three tools:
-  - **Reset Database** — Wipes all children, cards, and collection entries after a confirmation dialog.
-  - **Export to JSON** — Serializes the full database to a structured JSON file (`children`, `cards`, `collection` arrays with an `exported_at` timestamp) and opens the native share sheet.
-  - **Import from JSON** — Opens the system file picker filtered to `.json`, validates structure, and bulk-inserts with `INSERT OR IGNORE` to skip duplicates. Shows a result summary of how many rows were imported.
+- **Light / Dark Theme** — Full light and dark color palettes with an in-app toggle (☀️ / 🌙) on the Data tab. Every component — screens, buttons, dialogs, sheets, navigation chrome, and Skia canvases — reacts instantly via a `useColors()` hook backed by a Zustand theme store. Module-level `StyleSheet.create` blocks were moved into components with `useMemo` so they rebuild on theme change.
 
-- **Local SQLite Database** — All collections, children, and cards stored on-device with WAL mode and foreign keys. Schema migrations run automatically on app start to keep existing databases up-to-date.
+- **Data Management** — A dedicated tab with:
+  - **Theme Toggle** — Switch between dark and light mode.
+  - **Reset Database** — Wipes all data after a confirmation dialog.
+  - **Export to JSON** — Serializes the full database (`children`, `cards`, `collection`) with an `exported_at` timestamp and opens the native share sheet.
+  - **Import from JSON** — Validates and bulk-inserts from a `.json` file with `INSERT OR IGNORE`, then shows an import summary.
 
-- **Offline-First** — Card data is cached locally in SQLite. Only the Search tab requires an internet connection (TCGdex API).
+- **Local SQLite Database** — All data stored on-device with WAL mode and foreign keys. Schema migrations run automatically on app start.
 
-- **OCR Card Scanning** — *(In progress)* Camera-based card scanning using `react-native-vision-camera` with the TCGdex OCR matching pipeline.
+- **Offline-First** — Card data is cached locally. Only search requires internet (TCGdex API).
+
+- **OCR Card Scanning** — *(In progress)* Camera-based scanning via `react-native-vision-camera`.
 
 ---
 
@@ -37,9 +40,9 @@ Three bottom tabs:
 |-----|-------|--------|-------------|
 | 🏠 | Collectors | HomeScreen | List of children, tap to view their card collection |
 | 🔍 | Search | SearchScreen | Search TCGdex API by card name, assign to children |
-| ⚙ | Data | DataManagementScreen | Reset, export, and import database |
+| ⚙ | Data | DataManagementScreen | Theme toggle, reset, export, and import database |
 
-The **Collectors** tab has a stack navigator for drill-down: Collection detail and Manage Collectors. The **Add Collector** screen is a full-screen modal accessible from both Collectors and Data tabs.
+The **Collectors** tab has a stack navigator for drill-down: Collection detail and Manage Collectors. The **Add Collector** screen is a full-screen modal.
 
 ---
 

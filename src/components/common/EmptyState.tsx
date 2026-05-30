@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { Button } from './Button';
-import { COLORS } from '../../theme/skiaTheme';
+import { useColors } from '../../theme/skiaTheme';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const DEFAULT_IMAGE = require('../../../assets/poketball-open.png');
@@ -23,6 +23,34 @@ export function EmptyState({
   actionLabel,
   onAction,
 }: EmptyStateProps) {
+  const COLORS = useColors();
+
+  const styles = useMemo(() => StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 32,
+      paddingVertical: 64,
+    },
+    icon: { fontSize: 64, marginBottom: 16 },
+    image: { width: 120, height: 120, marginBottom: 16, opacity: 0.6 },
+    title: {
+      fontSize: 20,
+      fontWeight: '600',
+      color: COLORS.textPrimary,
+      textAlign: 'center',
+      marginBottom: 8,
+    },
+    description: {
+      fontSize: 16,
+      color: COLORS.textSecondary,
+      textAlign: 'center',
+      lineHeight: 22,
+      marginBottom: 24,
+    },
+    action: { minWidth: 200 },
+  }), [COLORS]);
   return (
     <View style={styles.container}>
       {image ? (
@@ -40,30 +68,3 @@ export function EmptyState({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 32,
-    paddingVertical: 64,
-  },
-  icon: { fontSize: 64, marginBottom: 16 },
-  image: { width: 120, height: 120, marginBottom: 16, opacity: 0.6 },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  description: {
-    fontSize: 16,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: 24,
-  },
-  action: { minWidth: 200 },
-});

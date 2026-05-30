@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   Alert,
+  Switch,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { File } from 'expo-file-system';
@@ -13,13 +14,14 @@ import * as Sharing from 'expo-sharing';
 import { Button } from '../components/common/Button';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { useChildrenStore } from '../store/useChildrenStore';
+import { useThemeStore } from '../store/useThemeStore';
 import {
   resetAllData,
   exportAllData,
   importFromJson,
   type ImportSummary,
 } from '../database/dataManagement';
-import { COLORS, RADII, SPACING } from '../theme/skiaTheme';
+import { useColors, RADII, SPACING } from '../theme/skiaTheme';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -34,6 +36,9 @@ const EXPORT_FILENAME = 'pokemon_collection_export.json';
 export function DataManagementScreen() {
   const insets = useSafeAreaInsets();
   const fetchChildren = useChildrenStore((s) => s.fetchChildren);
+  const COLORS = useColors();
+  const themeMode = useThemeStore((s) => s.mode);
+  const toggleTheme = useThemeStore((s) => s.toggleTheme);
 
   // ---- Reset state ----
   const [resetDialogVisible, setResetDialogVisible] = useState(false);
@@ -71,8 +76,6 @@ export function DataManagementScreen() {
       const data = await exportAllData();
       const json = JSON.stringify(data, null, 2);
 
-      // Write to cache directory using the legacy API (v56 WritableStream
-      // does not reliably flush to disk on iOS before shareAsync reads it).
       const fileUri = `${cacheDirectory}${EXPORT_FILENAME}`;
       await writeAsStringAsync(fileUri, json);
 
@@ -90,7 +93,7 @@ export function DataManagementScreen() {
         );
       }
     } catch (err) {
-      console.error("Error: ", err)
+      console.error('Error: ', err);
       Alert.alert(
         'Export Failed',
         err instanceof Error ? err.message : 'Could not export data.',
@@ -112,7 +115,6 @@ export function DataManagementScreen() {
 
       if (result.canceled || !result.result) return;
 
-      // result.result is a File instance in v56
       const pickedFile = Array.isArray(result.result)
         ? result.result[0]
         : result.result;
@@ -143,6 +145,98 @@ export function DataManagementScreen() {
     }
   }, [fetchChildren]);
 
+  // ---- Styles (rebuilt on theme change) ----
+  const styles = useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: COLORS.background },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      backgroundColor: COLORS.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: COLORS.white10,
+    },
+    title: { fontSize: 20, fontWeight: '700', color: COLORS.gold },
+    scroll: { flex: 1 },
+    scrollContent: { padding: SPACING.lg, gap: SPACING.lg },
+
+    /* Action cards */
+    card: {
+      backgroundColor: COLORS.surface,
+      borderRadius: RADII.lg,
+      padding: SPACING.lg,
+      gap: SPACING.md,
+    },
+    cardHeader: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: SPACING.md,
+    },
+    cardIcon: { fontSize: 28, marginTop: 2 },
+    cardTitleBlock: { flex: 1 },
+    cardTitle: {
+      fontSize: 17,
+      fontWeight: '600',
+      color: COLORS.textPrimary,
+      marginBottom: 4,
+    },
+    cardDescription: {
+      fontSize: 14,
+      color: COLORS.textSecondary,
+      lineHeight: 20,
+    },
+
+    /* Theme toggle row */
+    themeRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    themeLabel: {
+      fontSize: 16,
+      fontWeight: '500',
+      color: COLORS.textPrimary,
+    },
+
+    /* Import summary */
+    summaryBanner: {
+      backgroundColor: '#143D2E',
+      borderRadius: RADII.md,
+      padding: SPACING.md,
+      gap: 4,
+    },
+    summaryTitle: {
+      fontSize: 15,
+      fontWeight: '600',
+      color: COLORS.success,
+    },
+    summaryText: {
+      fontSize: 14,
+      color: COLORS.success,
+      lineHeight: 20,
+    },
+
+    /* Import error */
+    errorBanner: {
+      backgroundColor: '#3E1515',
+      borderRadius: RADII.md,
+      padding: SPACING.md,
+      gap: 4,
+    },
+    errorTitle: {
+      fontSize: 15,
+      fontWeight: '600',
+      color: COLORS.danger,
+    },
+    errorText: {
+      fontSize: 14,
+      color: COLORS.danger,
+      lineHeight: 20,
+    },
+  }), [COLORS]);
+
   // ---- Render ----
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -156,6 +250,32 @@ export function DataManagementScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* -------------------------------------------------------- */}
+        {/* Theme Toggle                                            */}
+        {/* -------------------------------------------------------- */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardIcon}>{themeMode === 'dark' ? '🌙' : '☀️'}</Text>
+            <View style={styles.cardTitleBlock}>
+              <Text style={styles.cardTitle}>Appearance</Text>
+              <Text style={styles.cardDescription}>
+                Switch between dark and light theme.
+              </Text>
+            </View>
+          </View>
+          <View style={styles.themeRow}>
+            <Text style={styles.themeLabel}>
+              {themeMode === 'dark' ? 'Dark' : 'Light'} mode
+            </Text>
+            <Switch
+              value={themeMode === 'light'}
+              onValueChange={toggleTheme}
+              trackColor={{ false: COLORS.white15, true: COLORS.white15 }}
+              thumbColor={COLORS.gold}
+            />
+          </View>
+        </View>
+
         {/* -------------------------------------------------------- */}
         {/* Reset Database                                          */}
         {/* -------------------------------------------------------- */}
@@ -265,86 +385,3 @@ export function DataManagementScreen() {
     </View>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Styles
-// ---------------------------------------------------------------------------
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: COLORS.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.white10,
-  },
-  title: { fontSize: 20, fontWeight: '700', color: COLORS.gold },
-  scroll: { flex: 1 },
-  scrollContent: { padding: SPACING.lg, gap: SPACING.lg },
-
-  /* Action cards */
-  card: {
-    backgroundColor: COLORS.surface,
-    borderRadius: RADII.lg,
-    padding: SPACING.lg,
-    gap: SPACING.md,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: SPACING.md,
-  },
-  cardIcon: { fontSize: 28, marginTop: 2 },
-  cardTitleBlock: { flex: 1 },
-  cardTitle: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginBottom: 4,
-  },
-  cardDescription: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    lineHeight: 20,
-  },
-
-  /* Import summary */
-  summaryBanner: {
-    backgroundColor: '#143D2E',
-    borderRadius: RADII.md,
-    padding: SPACING.md,
-    gap: 4,
-  },
-  summaryTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: COLORS.success,
-  },
-  summaryText: {
-    fontSize: 14,
-    color: COLORS.success,
-    lineHeight: 20,
-  },
-
-  /* Import error */
-  errorBanner: {
-    backgroundColor: '#3E1515',
-    borderRadius: RADII.md,
-    padding: SPACING.md,
-    gap: 4,
-  },
-  errorTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: COLORS.danger,
-  },
-  errorText: {
-    fontSize: 14,
-    color: COLORS.danger,
-    lineHeight: 20,
-  },
-});

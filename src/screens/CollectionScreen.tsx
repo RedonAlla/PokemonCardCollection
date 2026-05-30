@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -15,13 +15,14 @@ import { useCollectionStore } from '../store/useCollectionStore';
 import { useChildrenStore } from '../store/useChildrenStore';
 import type { CardWithDateAdded } from '../types/database';
 import type { RootStackParamList } from '../core/Navigation';
-import { COLORS, RADII } from '../theme/skiaTheme';
+import { useColors, RADII } from '../theme/skiaTheme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Collection'>;
 type CollectionNav = NativeStackNavigationProp<RootStackParamList, 'Collection'>;
 
 export function CollectionScreen() {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
   const navigation = useNavigation<CollectionNav>();
   const route = useRoute<Props['route']>();
   const { childId, childName, childColor } = route.params;
@@ -47,6 +48,18 @@ export function CollectionScreen() {
     catch { /* ignore */ }
     finally { setDeleteDialogVisible(false); setCardToDelete(null); }
   }, [childId, cardToDelete, removeCardFromChild, refresh]);
+
+  const styles = useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: COLORS.background },
+    header: { backgroundColor: COLORS.surface, borderBottomWidth: 1, borderBottomColor: COLORS.white10 },
+    headerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 8 },
+    headerInfo: { alignItems: 'center', flex: 1 },
+    title: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary },
+    count: { fontSize: 13, color: COLORS.textSecondary, fontWeight: '500', marginTop: 2 },
+    colorBar: { height: 3 },
+    errorRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#3E1515', marginHorizontal: 16, marginTop: 8, padding: 12, borderRadius: RADII.md },
+    errorText: { flex: 1, fontSize: 14, color: COLORS.danger, marginRight: 12 },
+  }), [COLORS]);
 
   return (
     <ErrorBoundary>
@@ -75,15 +88,3 @@ export function CollectionScreen() {
     </ErrorBoundary>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
-  header: { backgroundColor: COLORS.surface, borderBottomWidth: 1, borderBottomColor: COLORS.white10 },
-  headerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 8 },
-  headerInfo: { alignItems: 'center', flex: 1 },
-  title: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary },
-  count: { fontSize: 13, color: COLORS.textSecondary, fontWeight: '500', marginTop: 2 },
-  colorBar: { height: 3 },
-  errorRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#3E1515', marginHorizontal: 16, marginTop: 8, padding: 12, borderRadius: RADII.md },
-  errorText: { flex: 1, fontSize: 14, color: COLORS.danger, marginRight: 12 },
-});

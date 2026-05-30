@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { COLORS, RADII } from '../../theme/skiaTheme';
+import { useColors, RADII } from '../../theme/skiaTheme';
 
 interface ButtonProps {
   title: string;
@@ -21,7 +21,36 @@ export function Button({
   loading = false,
   fullWidth = false,
 }: ButtonProps) {
+  const COLORS = useColors();
   const isDisabled = disabled || loading;
+
+  const styles = useMemo(() => StyleSheet.create({
+    base: {
+      borderRadius: RADII.md,
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row',
+    },
+    primary: { backgroundColor: COLORS.gold },
+    secondary: {
+      backgroundColor: COLORS.surfaceElevated,
+      borderWidth: 1,
+      borderColor: COLORS.white15,
+    },
+    danger: { backgroundColor: COLORS.danger },
+    size_small: { paddingHorizontal: 16, paddingVertical: 8 },
+    size_medium: { paddingHorizontal: 24, paddingVertical: 12 },
+    size_large: { paddingHorizontal: 32, paddingVertical: 16 },
+    fullWidth: { width: '100%' },
+    disabled: { opacity: 0.5 },
+    text: { fontWeight: '600' },
+    text_primary: { color: COLORS.background },
+    text_secondary: { color: COLORS.gold },
+    text_danger: { color: '#FFFFFF' },
+    textSize_small: { fontSize: 14 },
+    textSize_medium: { fontSize: 16 },
+    textSize_large: { fontSize: 18 },
+  }), [COLORS]);
 
   return (
     <TouchableOpacity
@@ -49,35 +78,3 @@ export function Button({
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  base: {
-    borderRadius: RADII.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  primary: {
-    backgroundColor: COLORS.gold,
-  },
-  secondary: {
-    backgroundColor: COLORS.surfaceElevated,
-    borderWidth: 1,
-    borderColor: COLORS.white15,
-  },
-  danger: {
-    backgroundColor: COLORS.danger,
-  },
-  size_small: { paddingHorizontal: 16, paddingVertical: 8 },
-  size_medium: { paddingHorizontal: 24, paddingVertical: 12 },
-  size_large: { paddingHorizontal: 32, paddingVertical: 16 },
-  fullWidth: { width: '100%' },
-  disabled: { opacity: 0.5 },
-  text: { fontWeight: '600' },
-  text_primary: { color: COLORS.background },
-  text_secondary: { color: COLORS.gold },
-  text_danger: { color: '#FFFFFF' },
-  textSize_small: { fontSize: 14 },
-  textSize_medium: { fontSize: 16 },
-  textSize_large: { fontSize: 18 },
-});

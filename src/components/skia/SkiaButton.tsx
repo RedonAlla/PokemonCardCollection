@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { TouchableOpacity, StyleSheet, View } from 'react-native';
 import {
   Canvas,
@@ -7,7 +7,7 @@ import {
   Text as SkiaText,
   Shadow,
 } from '@shopify/react-native-skia';
-import { COLORS, GRADIENTS, RADII } from '../../theme/skiaTheme';
+import { useColors, RADII } from '../../theme/skiaTheme';
 import { useSkiaFonts } from './SkiaText';
 
 interface SkiaButtonProps {
@@ -26,18 +26,6 @@ const SIZE_MAP = {
   large: { h: 56, px: 32, fontSize: 18 },
 } as const;
 
-const VARIANT_GRADIENT: Record<string, readonly [string, string]> = {
-  primary: [COLORS.gold, COLORS.electricBlue],
-  secondary: [COLORS.surface, COLORS.surfaceElevated],
-  danger: ['#E57373', '#C62828'],
-};
-
-const VARIANT_TEXT_COLOR: Record<string, string> = {
-  primary: COLORS.textPrimary,
-  secondary: COLORS.gold,
-  danger: COLORS.textPrimary,
-};
-
 export function SkiaButton({
   label,
   onPress,
@@ -48,8 +36,22 @@ export function SkiaButton({
   fullWidth = false,
 }: SkiaButtonProps) {
   const { bold, ready } = useSkiaFonts();
+  const COLORS = useColors();
   const { h, fontSize } = SIZE_MAP[size];
   const [width, setWidth] = useState(120);
+
+  const VARIANT_GRADIENT: Record<string, readonly [string, string]> = useMemo(() => ({
+    primary: [COLORS.gold, COLORS.electricBlue],
+    secondary: [COLORS.surface, COLORS.surfaceElevated],
+    danger: ['#E57373', '#C62828'],
+  }), [COLORS]);
+
+  const VARIANT_TEXT_COLOR: Record<string, string> = useMemo(() => ({
+    primary: COLORS.textPrimary,
+    secondary: COLORS.gold,
+    danger: COLORS.textPrimary,
+  }), [COLORS]);
+
   const gradientColors = VARIANT_GRADIENT[variant];
   const textColor = VARIANT_TEXT_COLOR[variant];
   const isDisabled = disabled || loading || !ready;

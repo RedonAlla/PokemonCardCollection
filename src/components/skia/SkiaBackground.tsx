@@ -1,11 +1,12 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Canvas, Circle, Path, Group } from '@shopify/react-native-skia';
-import { COLORS } from '../../theme/skiaTheme';
+import { useColors } from '../../theme/skiaTheme';
 
 function PokeballSilhouette({ x, y, radius, rotation, opacity }: {
   x: number; y: number; radius: number; rotation: number; opacity: number;
 }) {
+  const COLORS = useColors();
   const cx = x;
   const cy = y;
   const linePath = `M ${cx - radius} ${cy} L ${cx + radius} ${cy}`;

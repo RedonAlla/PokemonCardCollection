@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Button } from './Button';
-import { COLORS, RADII } from '../../theme/skiaTheme';
+import { useColors, RADII } from '../../theme/skiaTheme';
 
 interface ConfirmDialogProps {
   visible: boolean;
@@ -24,6 +24,32 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const COLORS = useColors();
+
+  const styles = useMemo(() => StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: COLORS.overlay,
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 32,
+    },
+    dialog: {
+      backgroundColor: COLORS.surfaceElevated,
+      borderRadius: RADII.xl,
+      padding: 24,
+      width: '100%',
+      maxWidth: 360,
+    },
+    title: { fontSize: 18, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 8 },
+    message: { fontSize: 15, color: COLORS.textSecondary, lineHeight: 22, marginBottom: 24 },
+    buttons: { flexDirection: 'row', justifyContent: 'flex-end', gap: 12 },
+    cancelButton: {
+      paddingHorizontal: 16, paddingVertical: 10, borderRadius: RADII.sm,
+      backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.white10,
+    },
+    cancelText: { fontSize: 16, color: COLORS.textSecondary, fontWeight: '500' },
+  }), [COLORS]);
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
       <View style={styles.overlay}>
@@ -46,28 +72,3 @@ export function ConfirmDialog({
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: COLORS.overlay,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
-  },
-  dialog: {
-    backgroundColor: COLORS.surfaceElevated,
-    borderRadius: RADII.xl,
-    padding: 24,
-    width: '100%',
-    maxWidth: 360,
-  },
-  title: { fontSize: 18, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 8 },
-  message: { fontSize: 15, color: COLORS.textSecondary, lineHeight: 22, marginBottom: 24 },
-  buttons: { flexDirection: 'row', justifyContent: 'flex-end', gap: 12 },
-  cancelButton: {
-    paddingHorizontal: 16, paddingVertical: 10, borderRadius: RADII.sm,
-    backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.white10,
-  },
-  cancelText: { fontSize: 16, color: COLORS.textSecondary, fontWeight: '500' },
-});

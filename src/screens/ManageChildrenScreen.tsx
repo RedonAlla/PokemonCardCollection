@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { View, FlatList, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -11,7 +11,7 @@ import { ErrorBoundary } from '../components/common/ErrorBoundary';
 import { useChildrenStore } from '../store/useChildrenStore';
 import type { ChildWithCount } from '../types/database';
 import type { RootStackParamList } from '../core/Navigation';
-import { COLORS, RADII } from '../theme/skiaTheme';
+import { useColors, RADII } from '../theme/skiaTheme';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const poketballImg = require('../../assets/poketball-open.png');
 
@@ -20,11 +20,31 @@ type Nav = NativeStackNavigationProp<RootStackParamList, 'ManageChildren'>;
 export function ManageChildrenScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
+  const COLORS = useColors();
   const { children, isLoading, fetchChildren, renameChild, deleteChild } = useChildrenStore();
   const [renamingId, setRenamingId] = useState<number | null>(null);
   const [renameText, setRenameText] = useState('');
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
   const childToDelete = children.find(c => c.id === deleteConfirmId);
+
+  const styles = useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: COLORS.background },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: COLORS.surface, borderBottomWidth: 1, borderBottomColor: COLORS.white10 },
+    title: { fontSize: 20, fontWeight: '700', color: COLORS.gold },
+    list: { padding: 16, gap: 8 },
+    listEmpty: { flex: 1 },
+    row: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.surface, borderRadius: RADII.md, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 2 },
+    rowInfo: { flex: 1, marginLeft: 12 },
+    name: { fontSize: 17, fontWeight: '600', color: COLORS.textPrimary },
+    cardCount: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2 },
+    renameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    renameInput: { flex: 1, fontSize: 17, color: COLORS.textPrimary, borderBottomWidth: 2, borderBottomColor: COLORS.gold, paddingVertical: 4 },
+    inlineBtn: { padding: 8 },
+    actions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    deleteBtn: { padding: 8 },
+    deleteIcon: { fontSize: 20 },
+    footer: { backgroundColor: COLORS.surface, borderTopWidth: 1, borderTopColor: COLORS.white10, paddingHorizontal: 16, paddingTop: 12 },
+  }), [COLORS]);
 
   const handleDelete = useCallback(async () => {
     if (deleteConfirmId === null) return;
@@ -93,22 +113,3 @@ export function ManageChildrenScreen() {
     </ErrorBoundary>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: COLORS.surface, borderBottomWidth: 1, borderBottomColor: COLORS.white10 },
-  title: { fontSize: 20, fontWeight: '700', color: COLORS.gold },
-  list: { padding: 16, gap: 8 },
-  listEmpty: { flex: 1 },
-  row: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.surface, borderRadius: RADII.md, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 2 },
-  rowInfo: { flex: 1, marginLeft: 12 },
-  name: { fontSize: 17, fontWeight: '600', color: COLORS.textPrimary },
-  cardCount: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2 },
-  renameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  renameInput: { flex: 1, fontSize: 17, color: COLORS.textPrimary, borderBottomWidth: 2, borderBottomColor: COLORS.gold, paddingVertical: 4 },
-  inlineBtn: { padding: 8 },
-  actions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  deleteBtn: { padding: 8 },
-  deleteIcon: { fontSize: 20 },
-  footer: { backgroundColor: COLORS.surface, borderTopWidth: 1, borderTopColor: COLORS.white10, paddingHorizontal: 16, paddingTop: 12 },
-});

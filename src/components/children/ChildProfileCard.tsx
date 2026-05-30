@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { Canvas, RoundedRect, Shadow } from '@shopify/react-native-skia';
 import { ChildAvatar } from './ChildAvatar';
-import { COLORS, RADII, SHADOWS } from '../../theme/skiaTheme';
+import { useColors, RADII, getShadows } from '../../theme/skiaTheme';
 import type { ChildWithCount } from '../../types/database';
 
 interface ChildProfileCardProps {
@@ -12,8 +12,20 @@ interface ChildProfileCardProps {
 
 export function ChildProfileCard({ child, onPress }: ChildProfileCardProps) {
   const { width: screenWidth } = useWindowDimensions();
+  const COLORS = useColors();
+  const SHADOWS = getShadows(COLORS);
   const cardWidth = screenWidth - 32;
   const cardHeight = 100;
+
+  const styles = useMemo(() => StyleSheet.create({
+    touchable: { marginHorizontal: 16, marginVertical: 6 },
+    cardContainer: { borderRadius: RADII.lg, overflow: 'hidden' },
+    content: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16 },
+    textContainer: { flex: 1, marginLeft: 16, justifyContent: 'center' },
+    name: { fontSize: 18, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 4 },
+    cardCount: { fontSize: 14, color: COLORS.textSecondary, fontWeight: '500' },
+    chevron: { fontSize: 28, color: COLORS.textMuted, fontWeight: '300', marginLeft: 8 },
+  }), [COLORS]);
 
   return (
     <TouchableOpacity
@@ -42,13 +54,3 @@ export function ChildProfileCard({ child, onPress }: ChildProfileCardProps) {
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  touchable: { marginHorizontal: 16, marginVertical: 6 },
-  cardContainer: { borderRadius: RADII.lg, overflow: 'hidden' },
-  content: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16 },
-  textContainer: { flex: 1, marginLeft: 16, justifyContent: 'center' },
-  name: { fontSize: 18, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 4 },
-  cardCount: { fontSize: 14, color: COLORS.textSecondary, fontWeight: '500' },
-  chevron: { fontSize: 28, color: COLORS.textMuted, fontWeight: '300', marginLeft: 8 },
-});

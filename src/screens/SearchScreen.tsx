@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { View, Text, TextInput, StyleSheet, ActivityIndicator, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -12,13 +12,14 @@ import { useAppStore } from '../store/useAppStore';
 import { searchCardsByName } from '../services/tcgdexApi';
 import type { TCGdexCardSearchResult } from '../types/api';
 import type { RootStackParamList } from '../core/Navigation';
-import { COLORS, RADII } from '../theme/skiaTheme';
+import { useColors, RADII } from '../theme/skiaTheme';
 
 type SearchNav = NativeStackNavigationProp<RootStackParamList, 'Search'>;
 
 export function SearchScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<SearchNav>();
+  const COLORS = useColors();
   const isOnline = useAppStore((s) => s.isOnline);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<TCGdexCardSearchResult[]>([]);
@@ -40,6 +41,22 @@ export function SearchScreen() {
   const canSearch = query.trim().length > 0 && !isSearching;
   const showEmpty = hasSearched && !isSearching && !error && results.length === 0;
   const showResults = results.length > 0;
+
+  const styles = useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: COLORS.background },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: COLORS.surface, borderBottomWidth: 1, borderBottomColor: COLORS.white10 },
+    headerCenter: { flex: 1, alignItems: 'center' },
+    title: { fontSize: 20, fontWeight: '700', color: COLORS.gold },
+    headerSpacer: { width: 64 },
+    offlineBanner: { backgroundColor: '#3E2515', marginHorizontal: 16, marginTop: 12, padding: 10, borderRadius: RADII.sm },
+    offlineText: { fontSize: 13, color: '#C28641', textAlign: 'center' },
+    searchRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 10 },
+    searchInput: { flex: 1, backgroundColor: COLORS.surfaceElevated, borderRadius: RADII.md, borderWidth: 1, borderColor: COLORS.white10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, color: COLORS.textPrimary },
+    errorBanner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#3E1515', marginHorizontal: 16, padding: 12, borderRadius: RADII.md, marginBottom: 8 },
+    errorText: { flex: 1, fontSize: 14, color: COLORS.danger, marginRight: 12 },
+    loadingContainer: { paddingVertical: 48, alignItems: 'center', gap: 12 },
+    loadingText: { fontSize: 15, color: COLORS.textSecondary },
+  }), [COLORS]);
 
   return (
     <ErrorBoundary>
@@ -65,19 +82,3 @@ export function SearchScreen() {
     </ErrorBoundary>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: COLORS.surface, borderBottomWidth: 1, borderBottomColor: COLORS.white10 },
-  headerCenter: { flex: 1, alignItems: 'center' },
-  title: { fontSize: 20, fontWeight: '700', color: COLORS.gold },
-  headerSpacer: { width: 64 },
-  offlineBanner: { backgroundColor: '#3E2515', marginHorizontal: 16, marginTop: 12, padding: 10, borderRadius: RADII.sm },
-  offlineText: { fontSize: 13, color: '#C28641', textAlign: 'center' },
-  searchRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 10 },
-  searchInput: { flex: 1, backgroundColor: COLORS.surfaceElevated, borderRadius: RADII.md, borderWidth: 1, borderColor: COLORS.white10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, color: COLORS.textPrimary },
-  errorBanner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#3E1515', marginHorizontal: 16, padding: 12, borderRadius: RADII.md, marginBottom: 8 },
-  errorText: { flex: 1, fontSize: 14, color: COLORS.danger, marginRight: 12 },
-  loadingContainer: { paddingVertical: 48, alignItems: 'center', gap: 12 },
-  loadingText: { fontSize: 15, color: COLORS.textSecondary },
-});

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { ChildAvatar } from './ChildAvatar';
-import { COLORS, RADII } from '../../theme/skiaTheme';
+import { useColors, RADII } from '../../theme/skiaTheme';
 import type { ChildWithCount } from '../../types/database';
 
 interface ChildSelectorProps {
@@ -11,6 +11,28 @@ interface ChildSelectorProps {
 }
 
 export function ChildSelector({ children, selectedIds, onToggle }: ChildSelectorProps) {
+  const COLORS = useColors();
+
+  const styles = useMemo(() => StyleSheet.create({
+    container: { gap: 8 },
+    empty: { padding: 24, alignItems: 'center' },
+    emptyText: { fontSize: 15, color: COLORS.textMuted },
+    row: {
+      flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 16,
+      backgroundColor: COLORS.surface, borderRadius: RADII.md, borderWidth: 2, borderColor: 'transparent',
+    },
+    rowSelected: {
+      backgroundColor: `${COLORS.electricBlue}15`, borderColor: COLORS.electricBlue,
+    },
+    name: { flex: 1, marginLeft: 12, fontSize: 16, fontWeight: '500', color: COLORS.textPrimary },
+    checkbox: {
+      width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: COLORS.textMuted,
+      alignItems: 'center', justifyContent: 'center',
+    },
+    checkboxSelected: { backgroundColor: COLORS.electricBlue, borderColor: COLORS.electricBlue },
+    checkmark: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
+  }), [COLORS]);
+
   if (children.length === 0) {
     return (
       <View style={styles.empty}>
@@ -44,23 +66,3 @@ export function ChildSelector({ children, selectedIds, onToggle }: ChildSelector
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { gap: 8 },
-  empty: { padding: 24, alignItems: 'center' },
-  emptyText: { fontSize: 15, color: COLORS.textMuted },
-  row: {
-    flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 16,
-    backgroundColor: COLORS.surface, borderRadius: RADII.md, borderWidth: 2, borderColor: 'transparent',
-  },
-  rowSelected: {
-    backgroundColor: `${COLORS.electricBlue}15`, borderColor: COLORS.electricBlue,
-  },
-  name: { flex: 1, marginLeft: 12, fontSize: 16, fontWeight: '500', color: COLORS.textPrimary },
-  checkbox: {
-    width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: COLORS.textMuted,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  checkboxSelected: { backgroundColor: COLORS.electricBlue, borderColor: COLORS.electricBlue },
-  checkmark: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
-});

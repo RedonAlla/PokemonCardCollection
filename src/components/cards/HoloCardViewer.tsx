@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet, Modal, TouchableOpacity, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { COLORS } from '../../theme/skiaTheme';
+import { useColors } from '../../theme/skiaTheme';
 import { PokemonCard } from '../common/card/PokemonCard';
 
 interface HoloCardViewerProps {
@@ -13,8 +13,18 @@ interface HoloCardViewerProps {
 
 export function HoloCardViewer({ visible, imageUrl, onClose }: HoloCardViewerProps) {
   const insets = useSafeAreaInsets();
+  const COLORS = useColors();
 
   const panGesture = Gesture.Pan();
+
+  const styles = useMemo(() => StyleSheet.create({
+    overlay: { flex: 1, backgroundColor: COLORS.background },
+    closeBtn: {
+      position: 'absolute', right: 20, width: 40, height: 40, borderRadius: 20,
+      backgroundColor: COLORS.white15, alignItems: 'center', justifyContent: 'center', zIndex: 10,
+    },
+    closeText: { fontSize: 18, color: COLORS.textPrimary, fontWeight: '600' },
+  }), [COLORS]);
 
   if (!visible) return null;
 
@@ -37,26 +47,3 @@ export function HoloCardViewer({ visible, imageUrl, onClose }: HoloCardViewerPro
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.95)'
-  },
-  closeBtn: {
-    position: 'absolute',
-    right: 20,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.white15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10,
-  },
-  closeText: {
-    fontSize: 18,
-    color: '#FFFFFF',
-    fontWeight: '600'
-  }
-});

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Canvas, RoundedRect, Shadow, Group } from '@shopify/react-native-skia';
-import { COLORS, RADII, SHADOWS } from '../../theme/skiaTheme';
+import { useColors, RADII, getShadows } from '../../theme/skiaTheme';
 
 interface SkiaCardProps {
   width: number;
@@ -16,11 +16,14 @@ export function SkiaCard({
   width,
   height,
   radius = RADII.lg,
-  color = COLORS.surface,
+  color: colorProp,
   elevated = false,
   glowColor,
   children,
 }: SkiaCardProps) {
+  const COLORS = useColors();
+  const SHADOWS = getShadows(COLORS);
+  const color = colorProp ?? COLORS.surface;
   const shadow = elevated ? SHADOWS.elevated : SHADOWS.card;
 
   return (

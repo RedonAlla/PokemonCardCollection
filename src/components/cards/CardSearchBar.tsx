@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { COLORS, RADII } from '../../theme/skiaTheme';
+import { useColors, RADII } from '../../theme/skiaTheme';
 
 interface CardSearchBarProps {
   value: string;
@@ -9,6 +9,23 @@ interface CardSearchBarProps {
 }
 
 export function CardSearchBar({ value, onChangeText, placeholder = 'Search cards...' }: CardSearchBarProps) {
+  const COLORS = useColors();
+
+  const styles = useMemo(() => StyleSheet.create({
+    container: {
+      flexDirection: 'row', alignItems: 'center',
+      backgroundColor: COLORS.surface, borderRadius: RADII.md,
+      marginHorizontal: 16, marginVertical: 8, paddingHorizontal: 12,
+      borderWidth: 1, borderColor: COLORS.white10,
+    },
+    searchIcon: { fontSize: 16, marginRight: 8 },
+    input: {
+      flex: 1, fontSize: 16, color: COLORS.textPrimary, paddingVertical: 12,
+    },
+    clearButton: { padding: 6 },
+    clearText: { fontSize: 14, color: COLORS.textMuted, fontWeight: '600' },
+  }), [COLORS]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.searchIcon}>🔍</Text>
@@ -32,18 +49,3 @@ export function CardSearchBar({ value, onChangeText, placeholder = 'Search cards
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: COLORS.surface, borderRadius: RADII.md,
-    marginHorizontal: 16, marginVertical: 8, paddingHorizontal: 12,
-    borderWidth: 1, borderColor: COLORS.white10,
-  },
-  searchIcon: { fontSize: 16, marginRight: 8 },
-  input: {
-    flex: 1, fontSize: 16, color: COLORS.textPrimary, paddingVertical: 12,
-  },
-  clearButton: { padding: 6 },
-  clearText: { fontSize: 14, color: COLORS.textMuted, fontWeight: '600' },
-});

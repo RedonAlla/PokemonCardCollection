@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import { View, FlatList, StyleSheet, Text, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -10,7 +10,7 @@ import { ErrorBoundary } from '../components/common/ErrorBoundary';
 import { Button } from '../components/common/Button';
 import type { ChildWithCount } from '../types/database';
 import type { RootStackParamList } from '../core/Navigation';
-import { COLORS } from '../theme/skiaTheme';
+import { useColors } from '../theme/skiaTheme';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const poketballImg = require('../../assets/poketball-open.png');
 
@@ -19,9 +19,27 @@ type HomeNav = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 export function HomeScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<HomeNav>();
+  const COLORS = useColors();
   const { children, isLoading, error, fetchChildren } = useChildrenStore();
 
   useEffect(() => { fetchChildren(); }, [fetchChildren]);
+
+  const styles = useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: COLORS.background },
+    header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16 },
+    title: { fontSize: 28, fontWeight: '700', color: COLORS.gold },
+    subtitle: { fontSize: 14, color: COLORS.textSecondary, marginTop: 2 },
+    errorBanner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#3E1515', marginHorizontal: 16, padding: 12, borderRadius: 12, marginBottom: 8 },
+    errorText: { flex: 1, fontSize: 14, color: COLORS.danger, marginRight: 12 },
+    loadingContainer: { padding: 16, gap: 10 },
+    skeletonCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.surface, borderRadius: 16, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 2 },
+    skeletonAvatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: COLORS.surfaceElevated },
+    skeletonText: { marginLeft: 16, flex: 1, gap: 6 },
+    skeletonLine: { height: 14, backgroundColor: COLORS.surfaceElevated, borderRadius: 4, width: '60%' },
+    skeletonLineShort: { width: '35%' },
+    list: { paddingBottom: 24 },
+    listEmpty: { flex: 1 },
+  }), [COLORS]);
 
   return (
     <ErrorBoundary>
@@ -69,20 +87,3 @@ export function HomeScreen() {
     </ErrorBoundary>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16 },
-  title: { fontSize: 28, fontWeight: '700', color: COLORS.gold },
-  subtitle: { fontSize: 14, color: COLORS.textSecondary, marginTop: 2 },
-  errorBanner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#3E1515', marginHorizontal: 16, padding: 12, borderRadius: 12, marginBottom: 8 },
-  errorText: { flex: 1, fontSize: 14, color: COLORS.danger, marginRight: 12 },
-  loadingContainer: { padding: 16, gap: 10 },
-  skeletonCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.surface, borderRadius: 16, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 2 },
-  skeletonAvatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: COLORS.surfaceElevated },
-  skeletonText: { marginLeft: 16, flex: 1, gap: 6 },
-  skeletonLine: { height: 14, backgroundColor: COLORS.surfaceElevated, borderRadius: 4, width: '60%' },
-  skeletonLineShort: { width: '35%' },
-  list: { paddingBottom: 24 },
-  listEmpty: { flex: 1 },
-});

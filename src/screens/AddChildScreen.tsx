@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -9,18 +9,36 @@ import { useChildrenStore } from '../store/useChildrenStore';
 import { validateChildName } from '../utils/validators';
 import { CHILD_COLORS } from '../types/child';
 import type { RootStackParamList } from '../core/Navigation';
-import { COLORS, RADII } from '../theme/skiaTheme';
+import { useColors, RADII } from '../theme/skiaTheme';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AddChild'>;
 
 export function AddChildScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
+  const COLORS = useColors();
   const addChild = useChildrenStore((s) => s.addChild);
   const [name, setName] = useState('');
   const [color, setColor] = useState<string>(CHILD_COLORS[0]);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const styles = useMemo(() => StyleSheet.create({
+    container: { flex: 1, backgroundColor: COLORS.background },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: COLORS.surface, borderBottomWidth: 1, borderBottomColor: COLORS.white10 },
+    title: { fontSize: 20, fontWeight: '700', color: COLORS.gold },
+    content: { flex: 1, paddingHorizontal: 24, paddingTop: 24 },
+    preview: { alignItems: 'center', marginBottom: 32 },
+    label: { fontSize: 14, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: 0.5, marginBottom: 8, textTransform: 'uppercase' },
+    input: { backgroundColor: COLORS.surfaceElevated, borderRadius: RADII.md, borderWidth: 1, borderColor: COLORS.white10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 17, color: COLORS.textPrimary, marginBottom: 20 },
+    inputError: { borderColor: COLORS.danger },
+    errorText: { fontSize: 14, color: COLORS.danger, marginBottom: 16, marginTop: -12 },
+    colorRow: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
+    colorDot: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+    colorDotSelected: { borderWidth: 3, borderColor: COLORS.gold },
+    checkmark: { color: '#FFFFFF', fontSize: 16, fontWeight: '700', textShadowColor: 'rgba(0,0,0,0.5)', textShadowRadius: 4 },
+    footer: { backgroundColor: COLORS.surface, borderTopWidth: 1, borderTopColor: COLORS.white10, paddingHorizontal: 16, paddingTop: 12 },
+  }), [COLORS]);
 
   const handleSave = useCallback(async () => {
     const trimmed = name.trim();
@@ -63,20 +81,3 @@ export function AddChildScreen() {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: COLORS.surface, borderBottomWidth: 1, borderBottomColor: COLORS.white10 },
-  title: { fontSize: 20, fontWeight: '700', color: COLORS.gold },
-  content: { flex: 1, paddingHorizontal: 24, paddingTop: 24 },
-  preview: { alignItems: 'center', marginBottom: 32 },
-  label: { fontSize: 14, fontWeight: '600', color: COLORS.textSecondary, letterSpacing: 0.5, marginBottom: 8, textTransform: 'uppercase' },
-  input: { backgroundColor: COLORS.surfaceElevated, borderRadius: RADII.md, borderWidth: 1, borderColor: COLORS.white10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 17, color: COLORS.textPrimary, marginBottom: 20 },
-  inputError: { borderColor: COLORS.danger },
-  errorText: { fontSize: 14, color: COLORS.danger, marginBottom: 16, marginTop: -12 },
-  colorRow: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
-  colorDot: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-  colorDotSelected: { borderWidth: 3, borderColor: COLORS.gold },
-  checkmark: { color: '#FFFFFF', fontSize: 16, fontWeight: '700', textShadowColor: 'rgba(0,0,0,0.5)', textShadowRadius: 4 },
-  footer: { backgroundColor: COLORS.surface, borderTopWidth: 1, borderTopColor: COLORS.white10, paddingHorizontal: 16, paddingTop: 12 },
-});

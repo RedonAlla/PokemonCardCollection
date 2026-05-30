@@ -1,6 +1,6 @@
 import React from 'react';
 import { Canvas, RoundedRect, LinearGradient, Shadow } from '@shopify/react-native-skia';
-import { COLORS, RADII } from '../../theme/skiaTheme';
+import { useColors, RADII } from '../../theme/skiaTheme';
 
 interface SkiaGradientBorderProps {
   width: number;
@@ -16,9 +16,11 @@ export function SkiaGradientBorder({
   height,
   radius = RADII.md,
   strokeWidth = 2,
-  colors = [COLORS.gold, COLORS.electricBlue],
+  colors: colorsProp,
   glow = false,
 }: SkiaGradientBorderProps) {
+  const COLORS = useColors();
+  const colors = colorsProp ?? [COLORS.gold, COLORS.electricBlue];
   return (
     <Canvas style={{ width, height }}>
       {glow && <Shadow dx={0} dy={0} blur={12} color={COLORS.electricBlue} />}
