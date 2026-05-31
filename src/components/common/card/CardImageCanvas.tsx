@@ -9,6 +9,7 @@ import {
   Group,
   RoundedRect,
 } from '@shopify/react-native-skia';
+import { backCard } from '../../../utils/images';
 
 interface CardImageCanvasProps {
   width: number;
@@ -19,11 +20,7 @@ interface CardImageCanvasProps {
 
 export function CardImageCanvas({width, height, imageUrl, gradientCenter}: CardImageCanvasProps) {
 
-  const skiaImage = useImage(imageUrl ?? '');
-
-  if (!skiaImage) {
-    return null;
-  }
+  const skiaImage = useImage(imageUrl ?? backCard);
 
   function glareShinyLayer() {
     return (
@@ -64,7 +61,7 @@ export function CardImageCanvas({width, height, imageUrl, gradientCenter}: CardI
 
   return (
     <Canvas style={{width, height}}>
-      <Image image={skiaImage} height={height} width={width} fit="cover" />     
+      <Image image={skiaImage ?? backCard} height={height} width={width} fit="cover" />     
       {glareShinyLayer()}
     </Canvas>
   );

@@ -4,8 +4,7 @@ import { CardGridItem } from './CardGridItem';
 import { EmptyState } from '../common/EmptyState';
 import { GRID_COLUMNS, GRID_SPACING } from '../../utils/constants';
 import type { CardWithDateAdded } from '../../types/database';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const poketballImg = require('../../../assets/poketball-open.png');
+import { pokeballImg } from '../../utils/images';
 
 interface CollectionGridProps {
   cards: CardWithDateAdded[];
@@ -28,7 +27,7 @@ export function CollectionGrid({
   if (!isLoading && cards.length === 0) {
     return (
       <EmptyState
-        image={poketballImg}
+        image={pokeballImg}
         title={emptyMessage}
         description="Search for a card and add it to this collection."
       />

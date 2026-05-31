@@ -1,10 +1,6 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
 import { useFont } from '@shopify/react-native-skia';
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const boldFontSource = require('../../../assets/fonts/Poppins-Bold.ttf');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const regularFontSource = require('../../../assets/fonts/Poppins-Regular.ttf');
+import { boldFontSource, regularFontSource } from '../utils/fonts';
 
 interface FontContextValue {
   bold: ReturnType<typeof useFont> | null;

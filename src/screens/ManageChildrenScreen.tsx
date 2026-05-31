@@ -12,8 +12,7 @@ import { useChildrenStore } from '../store/useChildrenStore';
 import type { ChildWithCount } from '../types/database';
 import type { RootStackParamList } from '../core/Navigation';
 import { useColors, RADII } from '../theme/skiaTheme';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const poketballImg = require('../../assets/poketball-open.png');
+import { pokeballImg } from '../utils/images';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'ManageChildren'>;
 
@@ -95,7 +94,7 @@ export function ManageChildrenScreen() {
         </View>
         <FlatList data={children} keyExtractor={item => `child-${item.id}`} renderItem={renderChild}
           contentContainerStyle={[styles.list, children.length === 0 && styles.listEmpty]}
-          ListEmptyComponent={!isLoading ? <EmptyState image={poketballImg} title="No Collectors"
+          ListEmptyComponent={!isLoading ? <EmptyState image={pokeballImg} title="No Collectors"
             description="Add your first collector to start tracking cards." actionLabel="Add Collector"
             onAction={() => navigation.navigate('AddChild')} /> : null}
           showsVerticalScrollIndicator={false}

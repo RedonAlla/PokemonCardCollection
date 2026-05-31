@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "PokemonCardCollection",
+    "name": "Pokemon Card Collection",
     "slug": "PokemonCardCollection",
     "version": "1.0.0",
     "owner": "redonalla",
@@ -16,7 +16,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.pokemoncardcollection.app",
       "infoPlist": {
-        "NSCameraUsageDescription": "PokemonCardCollection needs camera access to scan Pokemon cards."
+        "NSCameraUsageDescription": "PokemonCardCollection needs camera access to scan Pokemon cards.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {

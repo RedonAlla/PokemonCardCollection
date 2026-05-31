@@ -3,9 +3,6 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import { Button } from './Button';
 import { useColors } from '../../theme/skiaTheme';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const DEFAULT_IMAGE = require('../../../assets/poketball-open.png');
-
 interface EmptyStateProps {
   icon?: string;
   image?: ReturnType<typeof require>;

@@ -11,8 +11,7 @@ import { Button } from '../components/common/Button';
 import type { ChildWithCount } from '../types/database';
 import type { RootStackParamList } from '../core/Navigation';
 import { useColors } from '../theme/skiaTheme';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const poketballImg = require('../../assets/poketball-open.png');
+import { pokeballImg } from '../utils/images';
 
 type HomeNav = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -77,7 +76,7 @@ export function HomeScreen() {
             <ChildProfileCard child={item} onPress={() => navigation.navigate('Collection', { childId: item.id, childName: item.name, childColor: item.color })} />
           )}
           contentContainerStyle={[styles.list, children.length === 0 && styles.listEmpty]}
-          ListEmptyComponent={!isLoading ? <EmptyState image={poketballImg} title="No Collectors Yet"
+          ListEmptyComponent={!isLoading ? <EmptyState image={pokeballImg} title="No Collectors Yet"
             description="Add your first child to start tracking their Pokémon card collection."
             actionLabel="Add Collector" onAction={() => navigation.navigate('AddChild')} /> : null}
           refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetchChildren} tintColor={COLORS.gold} />}

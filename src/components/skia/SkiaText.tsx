@@ -1,9 +1,6 @@
 import { useFont } from '@shopify/react-native-skia';
+import { boldFontSource, regularFontSource } from '../../utils/fonts';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const boldFontSource = require('../../../../assets/fonts/Poppins-Bold.ttf');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const regularFontSource = require('../../../../assets/fonts/Poppins-Regular.ttf');
 
 /**
  * Hook to load Skia fonts. Call this in any component that renders Skia Text.

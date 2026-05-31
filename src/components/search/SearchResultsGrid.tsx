@@ -1,17 +1,45 @@
 import React, { useMemo } from 'react';
-import { FlatList, TouchableOpacity, View, Text, StyleSheet, useWindowDimensions } from 'react-native';
-import { Image } from 'expo-image';
+import { FlatList, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
+import {
+  Canvas,
+  useImage,
+  Image,
+} from '@shopify/react-native-skia';
 import type { TCGdexCardSearchResult } from '../../types/api';
 import { GRID_COLUMNS, GRID_SPACING } from '../../utils/constants';
 import { useColors, RADII } from '../../theme/skiaTheme';
+import { backCard } from '../../utils/images';
 
 interface SearchResultsGridProps {
   results: TCGdexCardSearchResult[];
   onCardPress: (card: TCGdexCardSearchResult) => void;
 }
 
-function getImageUrl(card: TCGdexCardSearchResult): string | null {
-  return card.image ? `${card.image}/high.webp` : null;
+interface CardViewProps {
+  image?: string | null;
+  width: number;
+  height: number;
+}
+
+function getImageUrl(image?: string | null) {
+  return image ? `${image}/high.webp` : null;
+}
+
+function CardView({ image, width, height }: CardViewProps) {
+  const imageUrl = useImage(getImageUrl(image) ?? backCard);
+
+  if(!imageUrl) return null;
+
+  return (
+    <Canvas style={{ width: width, height: height }}>
+      <Image
+        image={imageUrl}
+        height={height}
+        width={width}
+        fit="cover"
+      />
+    </Canvas>
+  );
 }
 
 export function SearchResultsGrid({ results, onCardPress }: SearchResultsGridProps) {
@@ -34,7 +62,6 @@ export function SearchResultsGrid({ results, onCardPress }: SearchResultsGridPro
   }), [COLORS]);
 
   const renderItem = ({ item }: { item: TCGdexCardSearchResult }) => {
-    const imageUrl = getImageUrl(item);
     return (
       <TouchableOpacity
         style={[styles.cardContainer, { width: cardWidth, height: cardHeight }]}
@@ -43,17 +70,7 @@ export function SearchResultsGrid({ results, onCardPress }: SearchResultsGridPro
         accessibilityRole="button"
         accessibilityLabel={`Card: ${item.name}`}
       >
-        <Image
-          source={imageUrl}
-          style={[styles.cardImage, { width: cardWidth, height: cardHeight }]}
-          contentFit="contain"
-          transition={200}
-        />
-        {!imageUrl && (
-          <View style={[styles.noImagePlaceholder, { width: cardWidth, height: cardHeight }]}>
-            <Text style={styles.noImageText}>?</Text>
-          </View>
-        )}
+        <CardView image={item.image} height={cardHeight} width={cardWidth} />
       </TouchableOpacity>
     );
   };

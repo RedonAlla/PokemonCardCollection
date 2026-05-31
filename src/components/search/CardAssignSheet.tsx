@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, ActivityIn
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Image } from 'expo-image';
 import type { TCGdexCardSearchResult } from '../../types/api';
 import type { OwnershipRow } from '../../types/database';
 import type { RootStackParamList } from '../../core/Navigation';
@@ -13,8 +12,8 @@ import { Button } from '../common/Button';
 import { ChildAvatar } from '../children/ChildAvatar';
 import { EmptyState } from '../common/EmptyState';
 import { useColors, RADII } from '../../theme/skiaTheme';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const poketballImg = require('../../../assets/poketball-open.png');
+import { Canvas, Image, useImage } from '@shopify/react-native-skia';
+import { backCard, getTckImageUrl, pokeballImg } from '../../utils/images';
 
 interface CardAssignSheetProps {
   visible: boolean;
@@ -24,12 +23,15 @@ interface CardAssignSheetProps {
 
 type VisibleViewProps = { visible: boolean };
 
+interface CardViewProps {
+  image?: string | null;
+  width: number;
+  height: number;
+  backgroundColor: string;
+}
+
 /** Shape of the themed styles object passed to sub-components. */
 type AssignStyles = ReturnType<typeof StyleSheet.create<ReturnType<typeof createStyles>>>;
-
-function getImageUrl(card: TCGdexCardSearchResult): string | null {
-  return card.image ? `${card.image}/high.webp` : null;
-}
 
 // -----------------------------------------------------------------------
 // Sub-components — receive `s` (styles) from the parent so they react to
@@ -81,12 +83,29 @@ function EmptyStateView({ visible, onClose }: CardAssignSheetProps) {
   if (!visible) return null;
   return (
     <EmptyState
-      image={poketballImg}
+      image={pokeballImg}
       title="No Collectors Yet"
       description="Add a collector first to start assigning cards."
       actionLabel="Add Collector"
       onAction={() => { onClose(); setTimeout(() => navigation.navigate('AddChild'), 300); }}
     />
+  );
+}
+
+function CardView({ image, width, height, backgroundColor }: CardViewProps) {
+  const imageUrl = useImage(getTckImageUrl(image) ?? backCard);
+
+  if(!imageUrl) return null;
+
+  return (
+    <Canvas style={{ backgroundColor: backgroundColor, width: width, height: height }}>
+      <Image
+        image={imageUrl}
+        height={height}
+        width={width}
+        fit="contain"
+      />
+    </Canvas>
   );
 }
 
@@ -101,7 +120,7 @@ function createStyles(c: ReturnType<typeof useColors>) {
     headerTitle: { fontSize: 20, fontWeight: '700' as const, color: c.gold },
     closeButton: { width: 36, height: 36, borderRadius: 18, backgroundColor: c.white10, alignItems: 'center' as const, justifyContent: 'center' as const },
     closeButtonText: { fontSize: 16, color: c.textSecondary, fontWeight: '600' as const },
-    cardPreviewContainer: { alignItems: 'center' as const, marginBottom: 12 },
+    cardPreviewContainer: { alignItems: 'center' as const,  },
     cardPreviewImage: { borderRadius: RADII.md, backgroundColor: c.surface },
     divider: { height: 1, backgroundColor: c.white10, marginVertical: 8 },
     loadingContainer: { paddingVertical: 32, alignItems: 'center' as const, gap: 12 },
@@ -160,7 +179,7 @@ export function CardAssignSheet({ visible, card, onClose }: CardAssignSheetProps
     try {
       await collectionsDb.assignCardToChildren(
         { tcgdexId: card.id, name: card.name, setName: card.set?.name ?? '', setId: card.set?.id ?? '',
-          edition: 'unlimited', imageUrl: getImageUrl(card), cardType: null, hp: null, rarity: null },
+          edition: 'unlimited', imageUrl: getTckImageUrl(card.image), cardType: null, hp: null, rarity: null },
         [childId]
       );
       setOwnership(prev => prev.map(row => row.child_id === childId ? { ...row, owns_card: 1 } : row));
@@ -170,7 +189,7 @@ export function CardAssignSheet({ visible, card, onClose }: CardAssignSheetProps
   }, [card]);
 
   if (!card) return null;
-  const imageUrl = getImageUrl(card);
+  //const imageUrl = getImageUrl(card);
   const previewWidth = screenWidth * 0.8;
   const previewHeight = previewWidth * 1.5;
   const allOwn = ownership.length > 0 && ownership.every(r => r.owns_card === 1);
@@ -180,10 +199,9 @@ export function CardAssignSheet({ visible, card, onClose }: CardAssignSheetProps
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={[s.sheet, { paddingTop: insets.top, paddingBottom: insets.bottom + 16 }]}>
         <SheetHeader onClose={onClose} s={s} />
-        <View style={s.cardPreviewContainer}>
-          <Image source={imageUrl} style={[s.cardPreviewImage, { width: previewWidth, height: previewHeight }]}
-            contentFit="contain" transition={200} />
-        </View>
+       <View style={s.cardPreviewContainer}>
+          <CardView image={card.image} width={previewWidth} height={previewHeight} backgroundColor={COLORS.surface} />
+        </View> 
         <View style={s.divider} />
         <LoadingView visible={isLoading} s={s} />
         <EmptyStateView visible={children.length < 1} onClose={onClose} />
